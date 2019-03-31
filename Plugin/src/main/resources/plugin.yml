@@ -1,0 +1,12 @@
+name: HolographicDisplays
+main: com.gmail.filoghost.holographicdisplays.HolographicDisplays
+version: ${project.version}
+api-version: 1.13
+
+softdepend: [ProtocolLib]
+
+commands:
+   holograms:
+      description: Main command for HolographicDisplays.
+      usage: /<command> (Startup error)
+      aliases: [hd, holo, hologram, holograms]
