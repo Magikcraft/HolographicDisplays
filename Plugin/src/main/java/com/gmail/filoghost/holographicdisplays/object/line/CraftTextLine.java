@@ -14,6 +14,7 @@
  */
 package com.gmail.filoghost.holographicdisplays.object.line;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,13 +30,12 @@ import com.gmail.filoghost.holographicdisplays.object.CraftHologram;
 import com.gmail.filoghost.holographicdisplays.placeholder.PlaceholdersManager;
 import com.gmail.filoghost.holographicdisplays.placeholder.RelativePlaceholder;
 import com.gmail.filoghost.holographicdisplays.util.Offsets;
-import com.gmail.filoghost.holographicdisplays.util.Utils;
 
 public class CraftTextLine extends CraftTouchableLine implements TextLine {
 
 	private String text;
 	private List<RelativePlaceholder> relativePlaceholders;
-	private NMSNameable nmsNameble;
+	private NMSNameable nmsNameable;
 	
 	
 	public CraftTextLine(CraftHologram parent, String text) {
@@ -53,14 +53,14 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	public void setText(String text) {
 		this.text = text;
 		
-		if (nmsNameble != null) {
+		if (nmsNameable != null) {
 			if (text != null && !text.isEmpty()) {
-				nmsNameble.setCustomNameNMS(text);
+				nmsNameable.setCustomNameNMS(text);
 				if (getParent().isAllowPlaceholders()) {
 					PlaceholdersManager.trackIfNecessary(this);
 				}
 			} else {
-				nmsNameble.setCustomNameNMS(""); // It will not appear
+				nmsNameable.setCustomNameNMS(""); // It will not appear
 				if (getParent().isAllowPlaceholders()) {
 					PlaceholdersManager.untrack(this);
 				}
@@ -71,7 +71,7 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 			for (RelativePlaceholder relativePlaceholder : RelativePlaceholder.getRegistry()) {
 				if (text.contains(relativePlaceholder.getTextPlaceholder())) {
 					if (relativePlaceholders == null) {
-						relativePlaceholders = Utils.newList();
+						relativePlaceholders = new ArrayList<>();
 					}
 					relativePlaceholders.add(relativePlaceholder);
 				}
@@ -86,12 +86,9 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	
 	@Override
 	public void setTouchHandler(TouchHandler touchHandler) {
-		
-		if (nmsNameble != null) {
-			
-			Location loc = nmsNameble.getBukkitEntityNMS().getLocation();
+		if (nmsNameable != null) {
+			Location loc = nmsNameable.getBukkitEntityNMS().getLocation();
 			super.setTouchHandler(touchHandler, loc.getWorld(), loc.getX(), loc.getY() - getTextOffset(), loc.getZ());
-			
 		} else {
 			super.setTouchHandler(touchHandler, null, 0, 0, 0);
 		}
@@ -101,13 +98,13 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	public void spawn(World world, double x, double y, double z) {
 		super.spawn(world, x, y, z);
 			
-		nmsNameble = HolographicDisplays.getNMSManager().spawnNMSArmorStand(world, x, y + getTextOffset(), z, this);
+		nmsNameable = HolographicDisplays.getNMSManager().spawnNMSArmorStand(world, x, y + getTextOffset(), z, this);
 
 		if (text != null && !text.isEmpty()) {
-			nmsNameble.setCustomNameNMS(text);
+			nmsNameable.setCustomNameNMS(text);
 		}
 		
-		nmsNameble.setLockTick(true);
+		nmsNameable.setLockTick(true);
 	}
 
 	
@@ -115,9 +112,9 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	public void despawn() {
 		super.despawn();
 		
-		if (nmsNameble != null) {
-			nmsNameble.killEntityNMS();
-			nmsNameble = null;
+		if (nmsNameable != null) {
+			nmsNameable.killEntityNMS();
+			nmsNameable = null;
 		}
 	}
 	
@@ -132,8 +129,8 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	public void teleport(double x, double y, double z) {
 		super.teleport(x, y, z);
 		
-		if (nmsNameble != null) {
-			nmsNameble.setLocationNMS(x, y + getTextOffset(), z);
+		if (nmsNameable != null) {
+			nmsNameable.setLocationNMS(x, y + getTextOffset(), z);
 		}
 	}
 	
@@ -141,17 +138,17 @@ public class CraftTextLine extends CraftTouchableLine implements TextLine {
 	public int[] getEntitiesIDs() {
 		if (isSpawned()) {
 			if (touchSlime != null) {
-				return ArrayUtils.add(touchSlime.getEntitiesIDs(), nmsNameble.getIdNMS());
+				return ArrayUtils.add(touchSlime.getEntitiesIDs(), nmsNameable.getIdNMS());
 			} else {
-				return new int[] {nmsNameble.getIdNMS()};
+				return new int[] {nmsNameable.getIdNMS()};
 			}
 		} else {
 			return new int[0];
 		}
 	}
 
-	public NMSNameable getNmsNameble() {
-		return nmsNameble;
+	public NMSNameable getNmsNameable() {
+		return nmsNameable;
 	}
 
 	private double getTextOffset() {

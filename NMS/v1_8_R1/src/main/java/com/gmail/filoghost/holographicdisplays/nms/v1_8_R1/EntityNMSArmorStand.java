@@ -37,10 +37,12 @@ import net.minecraft.server.v1_8_R1.World;
 
 public class EntityNMSArmorStand extends EntityArmorStand implements NMSArmorStand {
 
-	private static final ReflectField<Integer> DISABLED_SLOTS_FIELD = new ReflectField<Integer>(EntityArmorStand.class, "bg");
+	private static final ReflectField<Integer> DISABLED_SLOTS_FIELD = new ReflectField<>(EntityArmorStand.class, "bg");
 	
 	private boolean lockTick;
 	private HologramLine parentPiece;
+
+	private String customName;
 	
 	public EntityNMSArmorStand(World world, HologramLine parentPiece) {
 		super(world);
@@ -156,16 +158,14 @@ public class EntityNMSArmorStand extends EntityArmorStand implements NMSArmorSta
 	
 	@Override
 	public void setCustomNameNMS(String name) {
-		if (name != null && name.length() > 300) {
-			name = name.substring(0, 300);
-		}
-		super.setCustomName(name);
-		super.setCustomNameVisible(name != null && !name.isEmpty());
+		this.customName = Utils.limitLength(name, 300);
+		super.setCustomName(customName);
+		super.setCustomNameVisible(customName != null && !customName.isEmpty());
 	}
 	
 	@Override
 	public String getCustomNameNMS() {
-		return super.getCustomName();
+		return this.customName;
 	}
 
 	@Override

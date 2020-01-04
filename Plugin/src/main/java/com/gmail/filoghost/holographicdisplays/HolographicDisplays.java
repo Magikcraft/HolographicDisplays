@@ -24,7 +24,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.gmail.filoghost.holographicdisplays.SimpleUpdater.ResponseHandler;
 import com.gmail.filoghost.holographicdisplays.api.internal.BackendAPI;
 import com.gmail.filoghost.holographicdisplays.bridge.bungeecord.BungeeServerTracker;
 import com.gmail.filoghost.holographicdisplays.bridge.protocollib.ProtocolLibHook;
@@ -48,6 +47,8 @@ import com.gmail.filoghost.holographicdisplays.util.ConsoleLogger;
 import com.gmail.filoghost.holographicdisplays.util.NMSVersion;
 import com.gmail.filoghost.holographicdisplays.util.VersionUtils;
 
+import me.filoghost.updatechecker.UpdateChecker;
+
 public class HolographicDisplays extends JavaPlugin {
 	
 	// The main instance of the plugin.
@@ -60,7 +61,7 @@ public class HolographicDisplays extends JavaPlugin {
 	private static MainListener mainListener;
 	
 	// The command handler, just in case a plugin wants to register more commands.
-	private HologramsCommandHandler commandHandler;
+	private static HologramsCommandHandler commandHandler;
 	
 	// The new version found by the updater, null if there is no new version.
 	private static String newVersion;
@@ -87,16 +88,11 @@ public class HolographicDisplays extends JavaPlugin {
 		Configuration.load(this);
 		
 		if (Configuration.updateNotification) {
-			new SimpleUpdater(this, 75097).checkForUpdates(new ResponseHandler() {
-				
-				@Override
-				public void onUpdateFound(final String newVersion) {
-
-					HolographicDisplays.newVersion = newVersion;
-					ConsoleLogger.log(Level.INFO, "Found a new version available: " + newVersion);
-					ConsoleLogger.log(Level.INFO, "Download it on Bukkit Dev:");
-					ConsoleLogger.log(Level.INFO, "dev.bukkit.org/bukkit-plugins/holographic-displays");
-				}
+			UpdateChecker.run(this, 75097, (String newVersion) -> {
+				HolographicDisplays.newVersion = newVersion;
+				ConsoleLogger.log(Level.INFO, "Found a new version available: " + newVersion);
+				ConsoleLogger.log(Level.INFO, "Download it on Bukkit Dev:");
+				ConsoleLogger.log(Level.INFO, "dev.bukkit.org/projects/holographic-displays");
 			});
 		}
 		
@@ -104,7 +100,7 @@ public class HolographicDisplays extends JavaPlugin {
 			printWarnAndDisable(
 				"******************************************************",
 				"     This version of HolographicDisplays only",
-				"     works on server versions from 1.8 to 1.13.1.",
+				"     works on server versions from 1.8 to 1.15.",
 				"     The plugin will be disabled.",
 				"******************************************************"
 			);
@@ -201,7 +197,7 @@ public class HolographicDisplays extends JavaPlugin {
 		return mainListener;
 	}
 
-	public HologramsCommandHandler getCommandHandler() {
+	public static HologramsCommandHandler getCommandHandler() {
 		return commandHandler;
 	}
 	

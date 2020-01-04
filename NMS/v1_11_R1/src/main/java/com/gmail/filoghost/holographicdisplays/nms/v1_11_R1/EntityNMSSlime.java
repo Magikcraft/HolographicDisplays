@@ -14,6 +14,8 @@
  */
 package com.gmail.filoghost.holographicdisplays.nms.v1_11_R1;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftEntity;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -36,7 +38,7 @@ import net.minecraft.server.v1_11_R1.World;
 
 public class EntityNMSSlime extends EntitySlime implements NMSSlime {
 	
-	private static final ReflectField<Entity> VEHICLE_FIELD = new ReflectField<Entity>(Entity.class, "au");
+	private static final ReflectField<Entity> VEHICLE_FIELD = new ReflectField<>(Entity.class, "au");
 
 	private boolean lockTick;
 	private HologramLine parentPiece;
@@ -223,8 +225,8 @@ public class EntityNMSSlime extends EntitySlime implements NMSSlime {
 	        entity.passengers.clear();
 	        entity.passengers.add(this);
 
-		} catch (Exception ex) {
-			ConsoleLogger.logDebugException(ex);
+		} catch (Throwable t) {
+			ConsoleLogger.logDebug(Level.SEVERE, "Couldn't set passenger", t);
 		}
 	}
 }

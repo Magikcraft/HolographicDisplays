@@ -27,10 +27,10 @@ public class ItemUtils {
 	public static final String ANTISTACK_LORE = ChatColor.BLACK.toString() + Math.random();
 	
 	// A map with formatted materials (lowercase and without symbols) for fast access.
-	private static final Map<String, Material> NAMES_TO_MATERIALS = new HashMap<String, Material>();
+	private static final Map<String, Material> NAMES_TO_MATERIALS = new HashMap<>();
 	
 	// The chars that will be ignored when matching materials.
-	private static final Pattern STRIP_SPACING_SYMBOLS_PATTERN = Pattern.compile("[_ \\-]+");
+	private static final Pattern SPACING_CHARACTERS_PATTERN = Pattern.compile("[_ \\-]+");
 	
 	static {
 		// Add default materials.
@@ -100,7 +100,7 @@ public class ItemUtils {
 	}
 	
 	public static String stripSpacingChars(String input) {
-		return STRIP_SPACING_SYMBOLS_PATTERN.matcher(input).replaceAll("");
+		return SPACING_CHARACTERS_PATTERN.matcher(input).replaceAll("");
 	}
 	
 	@SuppressWarnings("deprecation")

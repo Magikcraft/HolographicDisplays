@@ -14,6 +14,7 @@
  */
 package com.gmail.filoghost.holographicdisplays.object;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Chunk;
@@ -57,7 +58,7 @@ public class CraftHologram implements Hologram, com.gmail.filoghost.holograms.ap
 		Validator.notNull(location, "location");
 		updateLocation(location.getWorld(), location.getX(), location.getY(), location.getZ());
 		
-		lines = Utils.newList();
+		lines = new ArrayList<>();
 		allowPlaceholders = false;
 		creationTimestamp = System.currentTimeMillis();
 		visibilityManager = new CraftVisibilityManager(this);
@@ -231,28 +232,12 @@ public class CraftHologram implements Hologram, com.gmail.filoghost.holograms.ap
 
 	@Override
 	public void setAllowPlaceholders(boolean allowPlaceholders) {
-		if (this.allowPlaceholders != allowPlaceholders) {
-			
-			if (allowPlaceholders) {
-				// Now allowed, previously weren't
-				for (CraftHologramLine line : lines) {
-					if (line instanceof CraftTextLine) {
-						PlaceholdersManager.trackIfNecessary((CraftTextLine) line);
-					}
-				}
-				
-			} else {
-				
-				// Now not allowed
-				for (CraftHologramLine line : lines) {
-					if (line instanceof CraftTextLine) {
-						PlaceholdersManager.untrack((CraftTextLine) line);
-					}
-				}
-			}
-			
-			this.allowPlaceholders = allowPlaceholders;
+		if (this.allowPlaceholders == allowPlaceholders) {
+			return;
 		}
+		
+		this.allowPlaceholders = allowPlaceholders;
+		refreshAll();
 	}
 	
 

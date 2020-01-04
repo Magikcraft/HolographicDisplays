@@ -14,6 +14,8 @@
  */
 package com.gmail.filoghost.holographicdisplays.nms.v1_8_R2;
 
+import java.util.logging.Level;
+
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
 
 import com.gmail.filoghost.holographicdisplays.api.line.HologramLine;
@@ -39,11 +41,12 @@ import net.minecraft.server.v1_8_R2.World;
 
 public class EntityNMSArmorStand extends EntityArmorStand implements NMSArmorStand {
 	
-	private static final ReflectField<Integer> DISABLED_SLOTS_FIELD = new ReflectField<Integer>(EntityArmorStand.class, "bi");
-	private static final ReflectMethod<Void> SET_MARKER_METHOD = new ReflectMethod<Void>(EntityArmorStand.class, "n", boolean.class);
+	private static final ReflectField<Integer> DISABLED_SLOTS_FIELD = new ReflectField<>(EntityArmorStand.class, "bi");
+	private static final ReflectMethod<Void> SET_MARKER_METHOD = new ReflectMethod<>(EntityArmorStand.class, "n", boolean.class);
 
 	private boolean lockTick;
 	private HologramLine parentPiece;
+	private String customName;
 	
 	public EntityNMSArmorStand(World world, HologramLine parentPiece) {
 		super(world);
@@ -54,8 +57,8 @@ public class EntityNMSArmorStand extends EntityArmorStand implements NMSArmorSta
 		setBasePlate(true);
 		try {
 			SET_MARKER_METHOD.invoke(this, true);
-		} catch (Exception e) {
-			ConsoleLogger.logDebugException(e);
+		} catch (Throwable t) {
+			ConsoleLogger.logDebug(Level.SEVERE, "Couldn't set armor stand as marker", t);
 			// It will still work, but the offset will be wrong.
 		}
 		this.parentPiece = parentPiece;
@@ -164,16 +167,14 @@ public class EntityNMSArmorStand extends EntityArmorStand implements NMSArmorSta
 	
 	@Override
 	public void setCustomNameNMS(String name) {
-		if (name != null && name.length() > 300) {
-			name = name.substring(0, 300);
-		}
-		super.setCustomName(name);
-		super.setCustomNameVisible(name != null && !name.isEmpty());
+		this.customName = Utils.limitLength(name, 300);
+		super.setCustomName(customName);
+		super.setCustomNameVisible(customName != null && !customName.isEmpty());
 	}
 	
 	@Override
 	public String getCustomNameNMS() {
-		return super.getCustomName();
+		return this.customName;
 	}
 	
 	@Override

@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,9 +40,7 @@ import com.gmail.filoghost.holographicdisplays.exception.TooWideException;
 import com.gmail.filoghost.holographicdisplays.exception.UnreadableImageException;
 import com.gmail.filoghost.holographicdisplays.image.ImageMessage;
 import com.gmail.filoghost.holographicdisplays.object.NamedHologram;
-import com.gmail.filoghost.holographicdisplays.object.NamedHologramManager;
 import com.gmail.filoghost.holographicdisplays.util.FileUtils;
-import com.gmail.filoghost.holographicdisplays.util.Utils;
 
 public class ReadimageCommand extends HologramSubCommand {
 
@@ -67,7 +66,7 @@ public class ReadimageCommand extends HologramSubCommand {
 		
 		boolean append = false;
 		
-		List<String> newArgs = Utils.newList();
+		List<String> newArgs = new ArrayList<>();
 		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equalsIgnoreCase("-a") || args[i].equalsIgnoreCase("-append")) {
@@ -79,8 +78,7 @@ public class ReadimageCommand extends HologramSubCommand {
 		
 		args = newArgs.toArray(new String[0]);
 		
-		NamedHologram hologram = NamedHologramManager.getHologram(args[0].toLowerCase());
-		CommandValidator.notNull(hologram, Strings.noSuchHologram(args[0].toLowerCase()));
+		NamedHologram hologram = CommandValidator.getNamedHologram(args[0]);
 		
 		int width = CommandValidator.getInteger(args[2]);
 		

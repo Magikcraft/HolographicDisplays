@@ -28,7 +28,6 @@ import com.gmail.filoghost.holographicdisplays.disk.HologramDatabase;
 import com.gmail.filoghost.holographicdisplays.event.NamedHologramEditedEvent;
 import com.gmail.filoghost.holographicdisplays.exception.CommandException;
 import com.gmail.filoghost.holographicdisplays.object.NamedHologram;
-import com.gmail.filoghost.holographicdisplays.object.NamedHologramManager;
 import com.gmail.filoghost.holographicdisplays.util.Utils;
 
 public class InsertlineCommand extends HologramSubCommand {
@@ -52,29 +51,30 @@ public class InsertlineCommand extends HologramSubCommand {
 
 	@Override
 	public void execute(CommandSender sender, String label, String[] args) throws CommandException {
-		NamedHologram hologram = NamedHologramManager.getHologram(args[0].toLowerCase());
-		CommandValidator.notNull(hologram, Strings.noSuchHologram(args[0].toLowerCase()));
+		NamedHologram hologram = CommandValidator.getNamedHologram(args[0]);
 		
 		int insertAfter = CommandValidator.getInteger(args[1]);
 		int oldLinesAmount = hologram.size();
 		
 		CommandValidator.isTrue(insertAfter >= 0 && insertAfter <= oldLinesAmount, "The number must be between 0 and " + hologram.size() + "(amount of lines of the hologram).");
 
-		hologram.getLinesUnsafe().add(insertAfter, HologramDatabase.readLineFromString(Utils.join(args, " ", 2, args.length), hologram));
+		hologram.getLinesUnsafe().add(insertAfter, HologramDatabase.deserializeHologramLine(Utils.join(args, " ", 2, args.length), hologram));
 		hologram.refreshAll();
 			
 		HologramDatabase.saveHologram(hologram);
 		HologramDatabase.trySaveToDisk();
 		
+		Bukkit.getPluginManager().callEvent(new NamedHologramEditedEvent(hologram));
+		
 		if (insertAfter == 0) {
 			sender.sendMessage(Colors.PRIMARY + "Line inserted before line n.1!");
 		} else if (insertAfter == oldLinesAmount) {
 			sender.sendMessage(Colors.PRIMARY + "Line appended at the end!");
-			sender.sendMessage(Strings.TIP_PREFIX + "Next time use /" + label + " addline to add a line at the end.");
+			sender.sendMessage(Strings.TIP_PREFIX + "Next time use \"/" + label + " addline\" to add a line at the end.");
 		} else {
 			sender.sendMessage(Colors.PRIMARY + "Line inserted between lines " + insertAfter + " and " + (insertAfter + 1) + "!");
 		}
-		Bukkit.getPluginManager().callEvent(new NamedHologramEditedEvent(hologram));
+		EditCommand.sendQuickEditCommands(sender, label, hologram.getName());
 	}
 
 	@Override

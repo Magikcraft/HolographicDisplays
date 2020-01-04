@@ -53,13 +53,13 @@ public class CreateCommand extends HologramSubCommand {
 	@Override
 	public void execute(CommandSender sender, String label, String[] args) throws CommandException {
 		Player player = CommandValidator.getPlayerSender(sender);
-		String name = args[0].toLowerCase();
+		String hologramName = args[0];
 
-		if (!name.matches("[a-zA-Z0-9_\\-]+")) {
+		if (!hologramName.matches("[a-zA-Z0-9_\\-]+")) {
 			throw new CommandException("The name must contain only alphanumeric chars, underscores and hyphens.");
 		}
 
-		CommandValidator.isTrue(!NamedHologramManager.isExistingHologram(name), "A hologram with that name already exists.");
+		CommandValidator.isTrue(!NamedHologramManager.isExistingHologram(hologramName), "A hologram with that name already exists.");
 
 		Location spawnLoc = player.getLocation();
 		boolean moveUp = player.isOnGround();
@@ -68,7 +68,7 @@ public class CreateCommand extends HologramSubCommand {
 			spawnLoc.add(0.0, 1.2, 0.0);
 		}
 
-		NamedHologram hologram = new NamedHologram(spawnLoc, name);
+		NamedHologram hologram = new NamedHologram(spawnLoc, hologramName);
 		NamedHologramManager.addHologram(hologram);
 
 		if (args.length > 1) {
@@ -76,7 +76,7 @@ public class CreateCommand extends HologramSubCommand {
 			String text = Utils.join(args, " ", 1, args.length);
 			CommandValidator.isTrue(!text.equalsIgnoreCase("{empty}"), "The first line should not be empty.");
 			
-			hologram.getLinesUnsafe().add(HologramDatabase.readLineFromString(text, hologram));
+			hologram.getLinesUnsafe().add(HologramDatabase.deserializeHologramLine(text, hologram));
 			player.sendMessage(Colors.SECONDARY_SHADOW + "(Change the lines with /" + label + " edit " + hologram.getName() + ")");
 		} else {
 			hologram.appendTextLine("Default hologram. Change it with " + Colors.PRIMARY + "/" + label + " edit " + hologram.getName());

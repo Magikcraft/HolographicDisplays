@@ -12,10 +12,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package java.util.function;
+package com.gmail.filoghost.holographicdisplays.bridge.protocollib.current.packet;
 
-public interface Function<T, R> {
+import org.bukkit.entity.Entity;
+
+import com.comphenix.protocol.events.PacketEvent;
+
+public interface EntityRelatedPacketWrapper {
+
+	public int getEntityID();
+
+    public Entity getEntity(PacketEvent event);
 	
-	R apply(T t);
-
 }

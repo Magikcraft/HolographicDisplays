@@ -14,6 +14,8 @@
  */
 package com.gmail.filoghost.holographicdisplays.nms.v1_8_R3;
 
+import java.util.logging.Level;
+
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -40,8 +42,8 @@ import net.minecraft.server.v1_8_R3.World;
 
 public class EntityNMSItem extends EntityItem implements NMSItem {
 	
-	private static final ReflectField<Double> RIDER_PITCH_DELTA = new ReflectField<Double>(Entity.class, "ar");
-	private static final ReflectField<Double> RIDER_YAW_DELTA = new ReflectField<Double>(Entity.class, "as");
+	private static final ReflectField<Double> RIDER_PITCH_DELTA = new ReflectField<>(Entity.class, "ar");
+	private static final ReflectField<Double> RIDER_YAW_DELTA = new ReflectField<>(Entity.class, "as");
 	
 	private boolean lockTick;
 	private ItemLine parentPiece;
@@ -176,14 +178,13 @@ public class EntityNMSItem extends EntityItem implements NMSItem {
 		NBTTagCompound display = newItem.getTag().getCompound("display");
 		
 		if (!newItem.getTag().hasKey("display")) {
-		newItem.getTag().set("display", display);
+			newItem.getTag().set("display", display);
 		}
 		
 		NBTTagList tagList = new NBTTagList();
 		tagList.add(new NBTTagString(ItemUtils.ANTISTACK_LORE)); // Antistack lore
-		
 		display.set("Lore", tagList);
-		newItem.count = 0;
+		
 		setItemStack(newItem);
 	}
 	
@@ -223,8 +224,8 @@ public class EntityNMSItem extends EntityItem implements NMSItem {
 		try {
 			RIDER_PITCH_DELTA.set(this, 0.0);
 			RIDER_YAW_DELTA.set(this, 0.0);
-		} catch (Exception ex) {
-			ConsoleLogger.logDebugException(ex);
+		} catch (Throwable t) {
+			ConsoleLogger.logDebug(Level.SEVERE, "Couldn't set rider pitch and yaw", t);
 		}
 
         if (this.vehicle != null) {

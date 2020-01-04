@@ -16,7 +16,9 @@ package com.gmail.filoghost.holographicdisplays.commands.main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -44,19 +46,20 @@ import com.gmail.filoghost.holographicdisplays.commands.main.subs.RemovelineComm
 import com.gmail.filoghost.holographicdisplays.commands.main.subs.SetlineCommand;
 import com.gmail.filoghost.holographicdisplays.commands.main.subs.TeleportCommand;
 import com.gmail.filoghost.holographicdisplays.exception.CommandException;
-import com.gmail.filoghost.holographicdisplays.util.Utils;
 
 public class HologramsCommandHandler implements CommandExecutor {
 
 	private List<HologramSubCommand> subCommands;
-	
+	private Map<Class<? extends HologramSubCommand>, HologramSubCommand> subCommandsByClass;
+
 	public HologramsCommandHandler() {
-		subCommands = Utils.newList();
+		subCommands = new ArrayList<>();
+		subCommandsByClass = new HashMap<>();
 		
 		registerSubCommand(new AddlineCommand());
 		registerSubCommand(new CreateCommand());
 		registerSubCommand(new DeleteCommand());
-		registerSubCommand(new EditCommand(this));
+		registerSubCommand(new EditCommand());
 		registerSubCommand(new ListCommand());
 		registerSubCommand(new NearCommand());
 		registerSubCommand(new TeleportCommand());
@@ -72,15 +75,20 @@ public class HologramsCommandHandler implements CommandExecutor {
 		registerSubCommand(new ReadimageCommand());
 		registerSubCommand(new InfoCommand());
 		
-		registerSubCommand(new HelpCommand(this));
+		registerSubCommand(new HelpCommand());
 	}
 	
 	public void registerSubCommand(HologramSubCommand subCommand) {
 		subCommands.add(subCommand);
+		subCommandsByClass.put(subCommand.getClass(), subCommand);
 	}
 	
 	public List<HologramSubCommand> getSubCommands() {
-		return new ArrayList<HologramSubCommand>(subCommands);
+		return new ArrayList<>(subCommands);
+	}
+	
+	public HologramSubCommand getSubCommand(Class<? extends HologramSubCommand> subCommandClass) {
+		return subCommandsByClass.get(subCommandClass);
 	}
 	
 	@Override

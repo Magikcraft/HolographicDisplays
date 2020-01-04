@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -29,7 +30,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import com.gmail.filoghost.holographicdisplays.util.ConsoleLogger;
-import com.gmail.filoghost.holographicdisplays.util.Utils;
 
 /**
  * Just a bunch of static varibles to hold the settings.
@@ -39,6 +39,7 @@ public class Configuration {
 	
 	public static double spaceBetweenLines;
 	public static boolean preciseHologramMovement;
+	public static boolean quickEditCommands;
 	public static String imageSymbol;
 	public static String transparencySymbol;
 	public static boolean updateNotification;
@@ -111,13 +112,12 @@ public class Configuration {
 		
 		
 		if (needsSave) {
-			config.options().header(Utils.join(new String[] {
+			config.options().header(String.join("\n",
 					".",
 					".  Read the tutorial at: http://dev.bukkit.org/bukkit-plugins/holographic-displays/",
 					".",
 					".  Plugin created by filoghost.",
-					"."},
-					"\n"));
+					"."));
 			config.options().copyHeader(true);
 			try {
 				config.save(configFile);
@@ -129,6 +129,7 @@ public class Configuration {
 		
 		spaceBetweenLines = config.getDouble(ConfigNode.SPACE_BETWEEN_LINES.getPath());
 		preciseHologramMovement = config.getBoolean(ConfigNode.PRECISE_HOLOGRAM_MOVEMENT.getPath());
+		quickEditCommands = config.getBoolean(ConfigNode.QUICK_EDIT_COMMANDS.getPath());
 		
 		updateNotification = config.getBoolean(ConfigNode.UPDATE_NOTIFICATION.getPath());
 		
@@ -151,7 +152,7 @@ public class Configuration {
 			pingerTimeout = 10000;
 		}
 		
-		pingerServers = Utils.newMap();
+		pingerServers = new HashMap<>();
 		
 		if (pingerEnable) {
 			for (String singleServer : config.getStringList(ConfigNode.BUNGEE_PINGER_SERVERS.getPath())) {

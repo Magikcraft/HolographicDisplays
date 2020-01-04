@@ -14,6 +14,8 @@
  */
 package com.gmail.filoghost.holographicdisplays.nms.v1_9_R1;
 
+import java.util.logging.Level;
+
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -42,7 +44,7 @@ import net.minecraft.server.v1_9_R1.World;
 
 public class EntityNMSItem extends EntityItem implements NMSItem {
 	
-	private static final ReflectField<Entity> VEHICLE_FIELD = new ReflectField<Entity>(Entity.class, "as");
+	private static final ReflectField<Entity> VEHICLE_FIELD = new ReflectField<>(Entity.class, "as");
 	
 	private boolean lockTick;
 	private ItemLine parentPiece;
@@ -213,14 +215,13 @@ public class EntityNMSItem extends EntityItem implements NMSItem {
 		NBTTagCompound display = newItem.getTag().getCompound("display");
 		
 		if (!newItem.getTag().hasKey("display")) {
-		newItem.getTag().set("display", display);
+			newItem.getTag().set("display", display);
 		}
 		
 		NBTTagList tagList = new NBTTagList();
 		tagList.add(new NBTTagString(ItemUtils.ANTISTACK_LORE)); // Antistack lore
-		
 		display.set("Lore", tagList);
-		newItem.count = 0;
+		
 		setItemStack(newItem);
 	}
 	
@@ -268,8 +269,8 @@ public class EntityNMSItem extends EntityItem implements NMSItem {
 	        entity.passengers.clear();
 	        entity.passengers.add(this);
 
-		} catch (Exception ex) {
-			ConsoleLogger.logDebugException(ex);
+		} catch (Throwable t) {
+			ConsoleLogger.logDebug(Level.SEVERE, "Couldn't set passenger", t);
 		}
 	}
 

@@ -28,7 +28,6 @@ import com.gmail.filoghost.holographicdisplays.disk.HologramDatabase;
 import com.gmail.filoghost.holographicdisplays.event.NamedHologramEditedEvent;
 import com.gmail.filoghost.holographicdisplays.exception.CommandException;
 import com.gmail.filoghost.holographicdisplays.object.NamedHologram;
-import com.gmail.filoghost.holographicdisplays.object.NamedHologramManager;
 
 public class RemovelineCommand extends HologramSubCommand {
 
@@ -50,8 +49,7 @@ public class RemovelineCommand extends HologramSubCommand {
 
 	@Override
 	public void execute(CommandSender sender, String label, String[] args) throws CommandException {
-		NamedHologram hologram = NamedHologramManager.getHologram(args[0].toLowerCase());
-		CommandValidator.notNull(hologram, Strings.noSuchHologram(args[0].toLowerCase()));
+		NamedHologram hologram = CommandValidator.getNamedHologram(args[0]);
 		
 		int lineNumber = CommandValidator.getInteger(args[1]);
 
@@ -65,8 +63,10 @@ public class RemovelineCommand extends HologramSubCommand {
 		
 		HologramDatabase.saveHologram(hologram);
 		HologramDatabase.trySaveToDisk();
-		sender.sendMessage(Colors.PRIMARY + "Line " + lineNumber + " removed!");
 		Bukkit.getPluginManager().callEvent(new NamedHologramEditedEvent(hologram));
+		
+		sender.sendMessage(Colors.PRIMARY + "Line " + lineNumber + " removed!");
+		EditCommand.sendQuickEditCommands(sender, label, hologram.getName());
 	}
 
 	@Override
